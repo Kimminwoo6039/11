@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7c2dfbcf-d02f-42c2-95d9-41c893e2c178" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/detection/yolo-8v-detection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/detection/yolo-8v-detection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/image/detection/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/image/detection/page.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,7 +156,7 @@
       <workItem from="1734317796148" duration="2185000" />
       <workItem from="1734400856690" duration="4409000" />
       <workItem from="1734417407373" duration="170000" />
-      <workItem from="1735517165476" duration="2414000" />
+      <workItem from="1735517165476" duration="4213000" />
     </task>
     <task id="LOCAL-00001" summary="in">
       <option name="closed" value="true" />
@@ -302,7 +302,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735517535925</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="2024-12-30 김민우&#10;1. yolo 중복 저장 수정">
+      <option name="closed" value="true" />
+      <created>1735519738224</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1735519738224</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -339,6 +347,7 @@
     <MESSAGE value="2024-12-12 김민우&#10;1. icon 추가 및 manifest 추가" />
     <MESSAGE value="2024-12-13 김민우&#10;1. gamble weight &#10;화이트리스트,블랙리스트 빠진거 추가" />
     <MESSAGE value="2024-12-30 김민우&#10;1. yolo 화면 분할 1분할에 4분할로 변경" />
-    <option name="LAST_COMMIT_MESSAGE" value="2024-12-30 김민우&#10;1. yolo 화면 분할 1분할에 4분할로 변경" />
+    <MESSAGE value="2024-12-30 김민우&#10;1. yolo 중복 저장 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="2024-12-30 김민우&#10;1. yolo 중복 저장 수정" />
   </component>
 </project>

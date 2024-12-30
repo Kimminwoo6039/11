@@ -53,6 +53,8 @@ export default function DetectionImage() {
       const db = await openDatabase();
       const transaction = db.transaction("images", "readonly");
       const store = transaction.objectStore("images");
+
+      // 전체 개수 가져오기
       const count = await new Promise<number>((resolve) => {
         const countRequest = store.count();
         countRequest.onsuccess = () => resolve(countRequest.result);
@@ -60,15 +62,21 @@ export default function DetectionImage() {
 
       setTotalPages(Math.ceil(count / ITEMS_PER_PAGE));
 
-      // Get images for the current page
-      const start = (page - 1) * ITEMS_PER_PAGE;
-      const request = store.getAll(IDBKeyRange.bound(start, start + ITEMS_PER_PAGE - 1));
-
-      const images = await new Promise<DetectionImageData[]>((resolve) => {
+      // 모든 이미지를 가져와서 페이징 처리
+      const allImages = await new Promise<DetectionImageData[]>((resolve) => {
+        const request = store.getAll();
         request.onsuccess = () => resolve(request.result);
       });
 
-      setImages(images);
+      // 배열을 역순으로 정렬 (최신순)
+      const sortedImages = allImages.reverse();
+
+      // 현재 페이지에 해당하는 이미지들만 선택
+      const start = (page - 1) * ITEMS_PER_PAGE;
+      const end = start + ITEMS_PER_PAGE;
+      const pageImages = sortedImages.slice(start, end);
+
+      setImages(pageImages);
     } catch (error) {
       console.error("Error loading images:", error);
     }
