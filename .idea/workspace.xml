@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7c2dfbcf-d02f-42c2-95d9-41c893e2c178" name="Changes" comment="2024-12-13 김민우&#10;1. gamble weight &#10;화이트리스트,블랙리스트 빠진거 추가">
+    <list default="true" id="7c2dfbcf-d02f-42c2-95d9-41c893e2c178" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/image/detection/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/image/detection/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/detection/yolo-8v-detection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/detection/yolo-8v-detection.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/sidebar/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/sidebar/app-sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/provider/gambling-context.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/provider/gambling-context.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +26,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+        <entry key="$PROJECT_DIR$" value="dev" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -49,27 +45,30 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/workspace/meercatch_chrome_-/public&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.stylelint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.stylelint&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.build.executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
-    &quot;npm.start.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\workspace\\meercatch_chrome_-\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "prod",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/workspace/meercatch_chrome_-/public",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.stylelint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.stylelint": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.build.executor": "Run",
+    "npm.dev.executor": "Run",
+    "npm.start.executor": "Run",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "actions.on.save",
+    "ts.external.directory.path": "C:\\workspace\\meercatch_chrome_-\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\workspace\meercatch_chrome_-\public" />
@@ -157,7 +156,7 @@
       <workItem from="1734317796148" duration="2185000" />
       <workItem from="1734400856690" duration="4409000" />
       <workItem from="1734417407373" duration="170000" />
-      <workItem from="1735517165476" duration="284000" />
+      <workItem from="1735517165476" duration="2414000" />
     </task>
     <task id="LOCAL-00001" summary="in">
       <option name="closed" value="true" />
@@ -295,7 +294,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734046701545</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="2024-12-30 김민우&#10;1. yolo 화면 분할 1분할에 4분할로 변경">
+      <option name="closed" value="true" />
+      <created>1735517535925</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1735517535925</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -312,7 +319,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="dev" />
+                        <option value="prod" />
                       </list>
                     </value>
                   </entry>
@@ -331,6 +338,7 @@
     <MESSAGE value="2024-12-11 김민우&#10;1. SSL 인증서 파일 추가&#10;2. 배포시 내부 Https 인증서 적용" />
     <MESSAGE value="2024-12-12 김민우&#10;1. icon 추가 및 manifest 추가" />
     <MESSAGE value="2024-12-13 김민우&#10;1. gamble weight &#10;화이트리스트,블랙리스트 빠진거 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="2024-12-13 김민우&#10;1. gamble weight &#10;화이트리스트,블랙리스트 빠진거 추가" />
+    <MESSAGE value="2024-12-30 김민우&#10;1. yolo 화면 분할 1분할에 4분할로 변경" />
+    <option name="LAST_COMMIT_MESSAGE" value="2024-12-30 김민우&#10;1. yolo 화면 분할 1분할에 4분할로 변경" />
   </component>
 </project>

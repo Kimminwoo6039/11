@@ -157,28 +157,76 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
       const transaction = db.transaction("images", "readwrite");
       const store = transaction.objectStore("images");
 
-      // 가장 최근 저장된 이미지 가져오기
+      // 가장 최근 저장된 이미지들 가져오기 (최근 3개만)
       const getAllRequest = store.getAll();
       const records = await new Promise((resolve, reject) => {
         getAllRequest.onsuccess = () => resolve(getAllRequest.result);
         getAllRequest.onerror = () => reject(getAllRequest.error);
       });
 
-      // 레코드가 있고, 마지막 저장된 이미지와 현재 이미지가 같다면 저장하지 않음
       if (records && records.length > 0) {
-        const lastImage = records[records.length - 1];
-        if (lastImage.data === imageData) {
-          console.log('Duplicate image detected, skipping save');
-          return;
+        // 최근 저장된 이미지들 중에서 중복 확인
+        const recentImages = records.slice(-3);
+        for (const record of recentImages) {
+          // 이미지 유사도 비교 (간단한 방식)
+          if (areImagesIdentical(record.data, imageData)) {
+            console.log('Duplicate image detected within recent saves, skipping save');
+            return;
+          }
+        }
+
+        // 오래된 레코드 삭제 (최대 10개만 유지)
+        if (records.length > 10) {
+          const oldKeys = records.slice(0, records.length - 10).map(r => r.id);
+          for (const key of oldKeys) {
+            await store.delete(key);
+          }
         }
       }
 
       // 새로운 이미지 저장
-      await store.add({data: imageData});
+      await store.add({
+        data: imageData,
+        timestamp: Date.now()
+      });
+
       console.log(`Image saved to ${dbName} successfully`);
     } catch (error) {
       console.error(`Failed to save image to ${dbName}:`, error);
     }
+  };
+
+  // 이미지 유사도 비교 함수
+  const areImagesIdentical = (img1: string, img2: string): boolean => {
+    // 기본적인 문자열 비교
+    if (img1 === img2) return true;
+
+    // 이미지 데이터의 길이가 비슷한지 확인
+    const lengthDiff = Math.abs(img1.length - img2.length);
+    if (lengthDiff < 100) {
+      // 추가적인 유사도 체크
+      const similarity = calculateSimilarity(img1, img2);
+      return similarity > 0.95; // 95% 이상 유사하면 동일하다고 판단
+    }
+
+    return false;
+  };
+
+// 간단한 유사도 계산 함수
+  const calculateSimilarity = (img1: string, img2: string): number => {
+    const minLength = Math.min(img1.length, img2.length);
+    const maxLength = Math.max(img1.length, img2.length);
+
+    let matches = 0;
+    // 샘플링하여 비교 (모든 문자를 비교하지 않고 일부만 비교)
+    const sampleSize = Math.min(1000, minLength);
+    const step = Math.floor(minLength / sampleSize);
+
+    for (let i = 0; i < minLength; i += step) {
+      if (img1[i] === img2[i]) matches++;
+    }
+
+    return matches / (sampleSize || 1);
   };
 
   // 모델 초기화
@@ -284,18 +332,18 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
 
   const drawSplitDetections = async (
-      canvas: HTMLCanvasElement,
+      canvas: HTMLCanvasElement | null,
       image: File,
-      allDetections: Array<{ boxes: DetectionBox[], sectionIndex: number }>
+      allDetections: Array<{ boxes: DetectionBox[]; sectionIndex: number }>
   ) => {
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas!.getContext('2d');
     if (!ctx) return;
 
     const img = new Image();
 
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
+      canvas!.width = img.width;
+      canvas!.height = img.height;
       ctx.drawImage(img, 0, 0);
 
       // 섹션별 오프셋 계산
@@ -344,7 +392,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
       // 감지된 경우 처리
       if (detectionFound) {
-        const newImageData = canvas.toDataURL('image/png');
+        const newImageData = canvas!.toDataURL('image/png');
         saveImageToDB('DetectionImageDB', newImageData);
         handleMessage();
         console.log('감지된 객체들:', detectedLabels.join(', '));
@@ -358,15 +406,16 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
 
   // 출력 처리
-  const processOutputs = (output: Float32Array, imgWidth: number, imgHeight: number): DetectionBox[] => {
+  const processOutputs = (output: Float32Array<any>, imgWidth: number, imgHeight: number): DetectionBox[] => {
     let boxes: DetectionBox[] = [];
+    // 클래스별 최대 감지 수 제한
+    const maxDetectionsPerClass = 1;
+    const classDetectionCount = new Map<number, number>();
 
     for (let index = 0; index < 2100; index++) {
-      // 클래스 수를 실제 YOLO_CLASSES 길이에 맞춤
       const [classId, prob] = [...Array(YOLO_CLASSES.length).keys()]
       .map(col => [col, output[2100 * (col + 4) + index]])
       .reduce((accum, item) => item[1] > accum[1] ? item : accum, [0, 0]);
-
 
       // 검출할 클래스 인덱스
       const targetClassIndices = [
@@ -377,19 +426,16 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         14  // 남성 생식기 노출
       ];
 
-      if (prob < CONSTANTS.CONF_THRESHOLD) {
+      // 기본 필터링
+      if (prob < CONSTANTS.CONF_THRESHOLD ||
+          !targetClassIndices.includes(classId) ||
+          classId >= YOLO_CLASSES.length) {
         continue;
       }
 
-
-      // 지정된 클래스만 검출
-      if (!targetClassIndices.includes(classId)) {
-        continue;
-      }
-
-
-      // classId가 YOLO_CLASSES 범위를 벗어나지 않도록 확인
-      if (classId >= YOLO_CLASSES.length) {
+      // 클래스별 감지 수 확인 및 제한
+      const currentCount = classDetectionCount.get(classId) || 0;
+      if (currentCount >= maxDetectionsPerClass) {
         continue;
       }
 
@@ -404,17 +450,36 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
       const x2 = (xc + w / 2) / 320 * imgWidth;
       const y2 = (yc + h / 2) / 320 * imgHeight;
 
-      console.log(`Detection: ${label} (${prob.toFixed(3)}) at [${x1.toFixed(1)}, ${y1.toFixed(1)}, ${x2.toFixed(1)}, ${y2.toFixed(1)}]`);
-      boxes.push([x1, y1, x2, y2, label, prob]);
+      // 너무 작은 박스 무시 (옵션)
+      const minSize = 20; // 최소 픽셀 크기
+      if ((x2 - x1) < minSize || (y2 - y1) < minSize) {
+        continue;
+      }
+
+      // 중복 감지 방지를 위한 거리 체크
+      const isDuplicate = boxes.some(box => {
+        const [bx1, by1, bx2, by2, blabel] = box;
+        // 같은 클래스이고 비슷한 위치에 있는 경우 중복으로 판단
+        return blabel === label &&
+            Math.abs(x1 - bx1) < 10 &&
+            Math.abs(y1 - by1) < 10;
+      });
+
+      if (!isDuplicate) {
+        console.log(`Detection: ${label} (${prob.toFixed(3)}) at [${x1.toFixed(1)}, ${y1.toFixed(1)}, ${x2.toFixed(1)}, ${y2.toFixed(1)}]`);
+        boxes.push([x1, y1, x2, y2, label, prob]);
+        classDetectionCount.set(classId, currentCount + 1);
+      }
     }
 
-    // NMS 적용
+    // NMS 적용 with 더 엄격한 IOU 임계값
+    const strictIouThreshold = 0.3; // 더 엄격한 IOU 임계값 설정
     boxes = boxes.sort((box1, box2) => box2[5] - box1[5]);
     const result = [];
 
     while (boxes.length > 0) {
       result.push(boxes[0]);
-      boxes = boxes.filter(box => calculateIoU(boxes[0], box) < CONSTANTS.IOU_THRESHOLD);
+      boxes = boxes.filter(box => calculateIoU(boxes[0], box) < strictIouThreshold);
     }
 
     return result;
@@ -474,9 +539,9 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
           [1, 3, CONSTANTS.INPUT_SIZE, CONSTANTS.INPUT_SIZE]
       );
 
-      const outputs = await modelSessionRef.current.run({images: inputTensor});
+      const outputs = await modelSessionRef.current!.run({images: inputTensor});
       return processOutputs(
-          outputs.output0.data as Float32Array,
+          outputs.output0.data as Float32Array<any>,
           preprocessedData.originalSize.width,
           preprocessedData.originalSize.height
       );
@@ -634,10 +699,37 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
     img.src = URL.createObjectURL(image);
   }, [handleMessage]); // handleMessage를 의존성 배열에 추가
 
-
+// 이전 이미지 데이터를 저장할 ref 추가
+  const prevImageRef = useRef<string | null>(null);
 // handleNewImage 함수 수정
   const handleNewImage = async (file: File) => {
+    const canvas = document.createElement('canvas');
+    const img = new Image();
     try {
+      // 현재 이미지를 canvas에 그려서 데이터 얻기
+      await new Promise((resolve) => {
+        img.onload = () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0);
+          resolve(true);
+        };
+        img.src = URL.createObjectURL(file);
+      });
+
+      const currentImageData = canvas.toDataURL('image/png');
+
+      // 이전 이미지와 비교
+      if (prevImageRef.current === currentImageData) {
+        console.log('Duplicate image detected, skipping detection');
+        return;
+      }
+
+      // 현재 이미지를 이전 이미지로 저장
+      prevImageRef.current = currentImageData;
+
+      // 중복이 아닌 경우 계속 처리
       const preprocessedSections = await preprocessImage(file);
       const allDetections = [];
 
@@ -657,8 +749,12 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
       if (canvasRef.current && allDetections.length > 0) {
         await drawSplitDetections(canvasRef.current, file, allDetections);
       }
+
     } catch (error) {
       console.error('Image processing failed:', error);
+    } finally {
+      // 메모리 정리
+      URL.revokeObjectURL(img.src);
     }
   };
 
