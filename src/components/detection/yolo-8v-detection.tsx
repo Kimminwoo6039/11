@@ -32,7 +32,7 @@ interface NotificationOptions {
 const CONSTANTS = {
   MODEL_PATH: '/nude.onnx',
   CONF_THRESHOLD: 0.5,
-  IOU_THRESHOLD: 0.3,
+  IOU_THRESHOLD: 0.5,
   INPUT_SIZE: 320,
   ALERT_COOLDOWN: 5000,
   DB_VERSION: 1,
@@ -176,7 +176,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         }
 
         // 오래된 레코드 삭제 (최대 10개만 유지)
-        if (records.length > 10) {
+        if (records.length >= 10) {
           const oldKeys = records.slice(0, records.length - 10).map(r => r.id);
           for (const key of oldKeys) {
             await store.delete(key);
