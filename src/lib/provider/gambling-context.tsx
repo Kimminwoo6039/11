@@ -65,15 +65,15 @@ export function GamblingProvider({children}: { children: ReactNode }) {
       "포인트", "입출금", "게임", "토큰", "인플레이", "토너먼트"
     ];
 
-    private urlBlacklist: string[] = [
+    private urlBlacklist = [
       "www.bwzx",
       "www.bet16",
       "1bet1.bet",
       "10x10v2a.com"
     ];
 
-    private urlWhitelist: string[] = [
-      "naver.com", "daum.net", "coupang.com", "ticketmonster.co.kr",
+    private urlWhitelist = [
+      "naver.com", "daum.net", "coupang.com", "ticketmonster.co.kr", "google.com",
       "baedalMinjok.com", "gmarket.co.kr", "auction.co.kr", "nate.com",
       "aladin.co.kr", "interpark.com", "ridibooks.com", "zigbang.com",
       "kakaocorp.com", "melon.com", "tistory.com", "hani.co.kr",
@@ -145,7 +145,6 @@ export function GamblingProvider({children}: { children: ReactNode }) {
       return gambleWeight;
     }
   }
-
 
   const initBlcokDB = async (): Promise<IDBDatabase> => {
     return new Promise((resolve, reject) => {
@@ -284,23 +283,53 @@ export function GamblingProvider({children}: { children: ReactNode }) {
 
   const saveDetection = async (detection: Omit<DetectionItem, 'id'>): Promise<number> => {
     const db = await initDB();
+    const transaction = db.transaction('detections', 'readwrite');
+
     return new Promise((resolve, reject) => {
       try {
-        const transaction = db.transaction('detections', 'readwrite');
         const store = transaction.objectStore('detections');
 
-        // timestamp와 함께 데이터 저장
-        const request = store.add({
-          ...detection,
-          timestamp: new Date().toISOString(),
-          id: Date.now() // 고유한 ID 생성
-        });
+        // 마지막 레코드 가져오기
+        const getAllRequest = store.getAll();
 
-        request.onsuccess = () => resolve(request.result as number);
-        request.onerror = () => reject(request.error);
+        getAllRequest.onsuccess = () => {
+          const existingDetections = getAllRequest.result;
+
+          if (existingDetections.length > 0) {
+            const lastDetection = existingDetections[existingDetections.length - 1];
+
+            // URL만 비교
+            if (lastDetection.url === detection.url) {
+              console.log('Duplicate URL found, skipping save');
+              resolve(-1);
+              return;
+            }
+          }
+
+          // 중복이 아닌 경우에만 저장
+          const newDetection = {
+            ...detection,
+            timestamp: new Date().toISOString(),
+            id: Date.now()
+          };
+
+          const addRequest = store.add(newDetection);
+
+          addRequest.onsuccess = () => {
+            console.log('Detection saved successfully');
+            resolve(addRequest.result as number);
+          };
+
+          addRequest.onerror = () => reject(addRequest.error);
+        };
+
+        getAllRequest.onerror = () => reject(getAllRequest.error);
+
       } catch (error) {
         console.error('저장 오류:', error);
         reject(error);
+      } finally {
+        transaction.oncomplete = () => db.close();
       }
     });
   };
@@ -353,24 +382,24 @@ export function GamblingProvider({children}: { children: ReactNode }) {
             currentData[0].검출유무 = 1;
             sendNotification('inappropriate', '도박 콘텐츠가 감지되었습니다.');
             toast({
-              title: "도박성 컨텐츠 감지",
+              title: "도박 컨텐츠 감지",
               description: "도박 관련 컨텐츠가 검출되었습니다.",
               variant: "destructive",
             });
 
-            window.postMessage(
-                {
-                  type: "block",
-                  source: "block",
-                  identifier: EXTENSION_IDENTIFIER,
-                  data: currentData[0].url,
-                  duration: '1'
-                },
-                "*"
-            );
+            // window.postMessage(
+            //     {
+            //       type: "block",
+            //       source: "block",
+            //       identifier: EXTENSION_IDENTIFIER,
+            //       data: currentData[0].url,
+            //       duration: '1'
+            //     },
+            //     "*"
+            // );
 
-            // BlockedSitesDB에도 저장
-            await saveToBlockedSitesDB(currentData[0].url, 1); // 10분 차단
+            // // BlockedSitesDB에도 저장
+            // await saveToBlockedSitesDB(currentData[0].url, 1); // 10분 차단
 
 
           }
