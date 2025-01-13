@@ -1,10 +1,11 @@
 "use client"
 
 import * as React from "react"
-import {BookOpen, Bot, SquareTerminal,} from "lucide-react"
+import {BookOpen, Bot, SquareTerminal,Image, Blocks, ShieldX, FolderDown, House} from "lucide-react"
 import {TeamSwitcher} from "@/components/sidebar/team-switcher"
 import {Sidebar, SidebarContent, SidebarHeader, SidebarRail,} from "@/components/ui/sidebar"
 import {NavMain} from "@/components/sidebar/nav-main";
+import { Collapsible } from "@radix-ui/react-collapsible"
 
 // This is sample data.
 const data = {
@@ -24,7 +25,7 @@ const data = {
     {
       title: "홈",
       url: "#",
-      icon: SquareTerminal,
+      icon: House,
       isActive: true,
       items: [
         {
@@ -36,7 +37,7 @@ const data = {
     {
       title: "이미지",
       url: "#",
-      icon: Bot,
+      icon: FolderDown,
       isActive: true,
       items: [
         {
@@ -52,7 +53,7 @@ const data = {
     {
       title: "도박",
       url: "#",
-      icon: BookOpen,
+      icon: Blocks,
       isActive: true,
       items: [
         {
@@ -64,7 +65,7 @@ const data = {
     {
       title: "차단",
       url: "#",
-      icon: BookOpen,
+      icon: ShieldX,
       isActive: true,
       items: [
         {
@@ -78,17 +79,17 @@ const data = {
 
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
   return (
-      <Sidebar collapsible="icon" {...props}>
-        <SidebarHeader>
+      <Sidebar  collapsible="icon" defaultCollapsed {...props} >
+        <SidebarHeader >
           <TeamSwitcher teams={data.teams}/>
         </SidebarHeader>
-        <SidebarContent>
+        <SidebarContent >
           <NavMain items={data.navMain}/>
         </SidebarContent>
         {/*<SidebarFooter>*/}
         {/*  <NavUser user={data.user}/>*/}
         {/*</SidebarFooter>*/}
-        <SidebarRail/>
+        {/* <SidebarRail/> */}
       </Sidebar>
   )
 }

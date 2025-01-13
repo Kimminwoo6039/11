@@ -54,7 +54,7 @@ export default function RootLayout({
       <Providers>
         <GamblingProvider>
           <CaptureToDetection/>
-          <SidebarProvider>
+          <SidebarProvider defaultOpen={false}>
             <AppSidebar/>
             <SidebarInset>
               {children}
