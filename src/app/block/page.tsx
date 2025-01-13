@@ -1,10 +1,10 @@
-"use client"
-import React, {useEffect, useState} from 'react';
-import {Card, CardContent, CardHeader} from "@/components/ui/card";
-import {Button} from "@/components/ui/button";
-import {ScrollArea} from "@/components/ui/scroll-area";
-import {Clock, Unlock} from 'lucide-react';
-import {Input} from "@/components/ui/input"
+"use client";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Clock, Unlock } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -12,17 +12,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import {useForm} from "react-hook-form"
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
-const EXTENSION_IDENTIFIER = 'URL_HISTORY_TRACKER_f7e8d9c6b5a4';
+const EXTENSION_IDENTIFIER = "URL_HISTORY_TRACKER_f7e8d9c6b5a4";
 
 interface BlockedSite {
   url: string;
@@ -43,13 +43,13 @@ export default function BlockedSitesList() {
   const form = useForm<BlockSiteFormData>({
     defaultValues: {
       url: "",
-      duration: 1
-    }
+      duration: 1,
+    },
   });
 
   const initDB = async (): Promise<IDBDatabase> => {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open('BlockedSitesDB', 1);
+      const request = indexedDB.open("BlockedSitesDB", 1);
 
       request.onerror = () => {
         console.error("DB Error:", request.error);
@@ -66,49 +66,54 @@ export default function BlockedSitesList() {
         const db = (event.target as IDBOpenDBRequest).result;
 
         // 기존 스토어가 있다면 삭제
-        if (db.objectStoreNames.contains('blockedSites')) {
-          db.deleteObjectStore('blockedSites');
+        if (db.objectStoreNames.contains("blockedSites")) {
+          db.deleteObjectStore("blockedSites");
         }
 
         // 새 스토어 생성
-        const store = db.createObjectStore('blockedSites', {
-          keyPath: 'url',
-          autoIncrement: false
+        const store = db.createObjectStore("blockedSites", {
+          keyPath: "url",
+          autoIncrement: false,
         });
 
         // 인덱스 생성
-        store.createIndex('blockedAt', 'blockedAt', {unique: false});
-        store.createIndex('unblockTime', 'unblockTime', {unique: false});
-        store.createIndex('duration', 'duration', {unique: false});
+        store.createIndex("blockedAt", "blockedAt", { unique: false });
+        store.createIndex("unblockTime", "unblockTime", { unique: false });
+        store.createIndex("duration", "duration", { unique: false });
 
         console.log("Store created:", store);
       };
     });
   };
 
-
   const blockSite = async (url: string, duration: number) => {
     try {
       console.log("Blocking site:", url, "duration:", duration);
 
       // 확장프로그램에 메시지 전송
-      window.postMessage({
-        type: "block",
-        source: "block",
-        identifier: EXTENSION_IDENTIFIER,
-        data: url,
-        duration: duration
-      }, "*");
+      window.postMessage(
+        {
+          type: "block",
+          source: "block",
+          identifier: EXTENSION_IDENTIFIER,
+          data: url,
+          duration: duration,
+        },
+        "*"
+      );
 
       const db = await initDB();
-      const transaction = db.transaction('blockedSites', 'readwrite');
-      const store = transaction.objectStore('blockedSites');
+      const transaction = db.transaction("blockedSites", "readwrite");
+      const store = transaction.objectStore("blockedSites");
 
       const blockedSite: BlockedSite = {
         url,
         blockedAt: new Date(),
-        unblockTime: duration > 0 ? new Date(Date.now() + duration * 60 * 1000) : undefined,
-        duration
+        unblockTime:
+          duration > 0
+            ? new Date(Date.now() + duration * 60 * 1000)
+            : undefined,
+        duration,
       };
 
       return new Promise<void>((resolve, reject) => {
@@ -126,26 +131,29 @@ export default function BlockedSitesList() {
         };
       });
     } catch (error) {
-      console.error('Error blocking site:', error);
+      console.error("Error blocking site:", error);
     }
   };
 
   const unblockSite = async (url: string) => {
     try {
-      window.postMessage({
-        type: "unblock",
-        source: "unblock",
-        identifier: EXTENSION_IDENTIFIER,
-        data: url
-      }, "*");
+      window.postMessage(
+        {
+          type: "unblock",
+          source: "unblock",
+          identifier: EXTENSION_IDENTIFIER,
+          data: url,
+        },
+        "*"
+      );
 
       const db = await initDB();
-      const transaction = db.transaction('blockedSites', 'readwrite');
-      const store = transaction.objectStore('blockedSites');
+      const transaction = db.transaction("blockedSites", "readwrite");
+      const store = transaction.objectStore("blockedSites");
       await store.delete(url);
       loadBlockedSites();
     } catch (error) {
-      console.error('Error unblocking site:', error);
+      console.error("Error unblocking site:", error);
     }
   };
 
@@ -153,8 +161,8 @@ export default function BlockedSitesList() {
     try {
       console.log("Loading blocked sites...");
       const db = await initDB();
-      const transaction = db.transaction('blockedSites', 'readonly');
-      const store = transaction.objectStore('blockedSites');
+      const transaction = db.transaction("blockedSites", "readonly");
+      const store = transaction.objectStore("blockedSites");
 
       return new Promise<void>((resolve, reject) => {
         const request = store.getAll();
@@ -166,10 +174,12 @@ export default function BlockedSitesList() {
 
         request.onsuccess = () => {
           console.log("Raw data loaded:", request.result);
-          const sites = request.result.map(site => ({
+          const sites = request.result.map((site) => ({
             ...site,
             blockedAt: new Date(site.blockedAt),
-            unblockTime: site.unblockTime ? new Date(site.unblockTime) : undefined
+            unblockTime: site.unblockTime
+              ? new Date(site.unblockTime)
+              : undefined,
           }));
           console.log("Processed sites:", sites);
           setBlockedSites(sites);
@@ -177,13 +187,13 @@ export default function BlockedSitesList() {
         };
       });
     } catch (error) {
-      console.error('Error loading blocked sites:', error);
+      console.error("Error loading blocked sites:", error);
     }
   };
 
   const truncateUrl = (url: string) => {
     if (url.length > 100) {
-      return url.substring(0, 100) + '...';
+      return url.substring(0, 100) + "...";
     }
     return url;
   };
@@ -202,8 +212,8 @@ export default function BlockedSitesList() {
     const checkExpiredSites = async () => {
       try {
         const db = await initDB();
-        const transaction = db.transaction('blockedSites', 'readwrite');
-        const store = transaction.objectStore('blockedSites');
+        const transaction = db.transaction("blockedSites", "readwrite");
+        const store = transaction.objectStore("blockedSites");
         const request = store.getAll();
 
         request.onsuccess = () => {
@@ -212,21 +222,24 @@ export default function BlockedSitesList() {
 
           sites.forEach(async (site) => {
             if (site.unblockTime && new Date(site.unblockTime) <= currentTime) {
-              console.log('Expired site found:', site.url);
+              console.log("Expired site found:", site.url);
               // DB에서 삭제
               await store.delete(site.url);
               // 차단 해제 메시지 전송
-              window.postMessage({
-                type: "unblock",
-                source: "unblock",
-                identifier: EXTENSION_IDENTIFIER,
-                data: site.url
-              }, "*");
+              window.postMessage(
+                {
+                  type: "unblock",
+                  source: "unblock",
+                  identifier: EXTENSION_IDENTIFIER,
+                  data: site.url,
+                },
+                "*"
+              );
             }
           });
         };
       } catch (error) {
-        console.error('Error checking expired sites:', error);
+        console.error("Error checking expired sites:", error);
       }
     };
 
@@ -244,6 +257,7 @@ export default function BlockedSitesList() {
   }, []);
 
   return (
+    <div className="min-h-screen bg-background p-4">
       <Card className="w-full">
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -257,34 +271,41 @@ export default function BlockedSitesList() {
                   <DialogTitle>새 사이트 차단</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                  >
                     <FormField
-                        control={form.control}
-                        name="url"
-                        render={({field}) => (
-                            <FormItem>
-                              <FormLabel>URL</FormLabel>
-                              <FormControl>
-                                <Input placeholder="example.com" {...field} />
-                              </FormControl>
-                              <FormMessage/>
-                            </FormItem>
-                        )}
+                      control={form.control}
+                      name="url"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL</FormLabel>
+                          <FormControl>
+                            <Input placeholder="example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                     <FormField
-                        control={form.control}
-                        name="duration"
-                        render={({field}) => (
-                            <FormItem>
-                              <FormLabel>차단 시간 (분)</FormLabel>
-                              <FormControl>
-                                <Input type="number" {...field}
-                                       onChange={e => field.onChange(parseInt(e.target.value))}
-                                />
-                              </FormControl>
-                              <FormMessage/>
-                            </FormItem>
-                        )}
+                      control={form.control}
+                      name="duration"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>차단 시간 (분)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(parseInt(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                     <Button type="submit">차단하기</Button>
                   </form>
@@ -297,40 +318,43 @@ export default function BlockedSitesList() {
           <ScrollArea className="h-[400px]">
             <div className="space-y-4">
               {blockedSites.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-8">
-                    차단된 사이트가 없습니다
-                  </div>
+                <div className="text-center text-muted-foreground py-8">
+                  차단된 사이트가 없습니다
+                </div>
               ) : (
-                  blockedSites.map((site) => (
-                      <div key={site.url}
-                           className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                        <div className="flex-1">
-                          <p className="font-medium">{truncateUrl(site.url)}</p>
-                          <div className="flex items-center text-sm text-muted-foreground mt-1">
-                            <Clock className="w-4 h-4 mr-1"/>
-                            차단 시간: {site.blockedAt.toLocaleString()}
-                            {site.unblockTime && (
-                                <span className="ml-2">
-                         (해제 예정: {site.unblockTime.toLocaleString()})
-                       </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => unblockSite(site.url)}
-                          >
-                            <Unlock className="w-4 h-4"/>
-                          </Button>
-                        </div>
+                blockedSites.map((site) => (
+                  <div
+                    key={site.url}
+                    className="flex items-center justify-between p-4 bg-muted rounded-lg"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">{truncateUrl(site.url)}</p>
+                      <div className="flex items-center text-sm text-muted-foreground mt-1">
+                        <Clock className="w-4 h-4 mr-1" />
+                        차단 시간: {site.blockedAt.toLocaleString()}
+                        {site.unblockTime && (
+                          <span className="ml-2">
+                            (해제 예정: {site.unblockTime.toLocaleString()})
+                          </span>
+                        )}
                       </div>
-                  ))
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => unblockSite(site.url)}
+                      >
+                        <Unlock className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           </ScrollArea>
         </CardContent>
       </Card>
+    </div>
   );
 }

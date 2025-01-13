@@ -1,4 +1,5 @@
-import {SidebarTrigger} from "@/components/ui/sidebar";
+"use client"
+import {SidebarGroupLabel, SidebarMenuButton, SidebarMenuItem, SidebarMenu, SidebarGroup, SidebarTrigger} from "@/components/ui/sidebar";
 import {Separator} from "@/components/ui/separator";
 import {
   Breadcrumb,
@@ -9,14 +10,17 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import CaptureToDetection from "@/components/detection/capture-to-detection";
+import { usePathname } from 'next/navigation';
 
-export default function layout({children}) {
+export default function Layout({children}: {children: React.ReactNode}) {
+  const pathname = usePathname();
+  
   return (
       <>
         <header
             className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1"/>
+            {/* <SidebarTrigger className="-ml-1"/> */}
             <Separator orientation="vertical" className="mr-2 h-4"/>
             <Breadcrumb>
               <BreadcrumbList>
@@ -34,7 +38,34 @@ export default function layout({children}) {
           </div>
         </header>
         <CaptureToDetection/>
-        {children}
+      
+        {/* Sidebar Submenu */}
+        <div className="flex flex-1 flex-row gap-0 p-4">
+          <div className="border border-border rounded-lg p-2"> 
+            <SidebarGroup>
+              <SidebarGroupLabel>검출내역</SidebarGroupLabel>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <Link href="/image/detection">
+                    <SidebarMenuButton isActive={pathname === '/image/detection'}>
+                      <span>선정성 검출 이미지</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/image/gambling">
+                    <SidebarMenuButton isActive={pathname === '/image/gambling'}>
+                      <span>도박 검출 이미지</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup> 
+          </div>  
+          <div className="flex-1 border border-border rounded-lg p-6">
+            {children}
+          </div>
+        </div>
 
       </>
   )

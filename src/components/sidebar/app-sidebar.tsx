@@ -35,7 +35,7 @@ const data = {
       ],
     },
     {
-      title: "이미지",
+      title: "검출내역",
       url: "#",
       icon: FolderDown,
       isActive: true,
@@ -79,7 +79,7 @@ const data = {
 
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
   return (
-      <Sidebar  collapsible="icon" defaultCollapsed {...props} >
+      <Sidebar collapsible="icon" className="w-[280px]  group-data-[collapsible=icon]:w-[60px] group-data-[collapsible=icon]:px-2" {...props} >
         <SidebarHeader >
           <TeamSwitcher teams={data.teams}/>
         </SidebarHeader>

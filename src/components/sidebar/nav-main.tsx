@@ -46,17 +46,19 @@ export function NavMain({
                     {item.items ? (
                       item.items.length > 1 ? (
                         <div className="w-full">
-                          <SidebarMenuButton tooltip={item.title}>
-                            <SidebarTrigger />
-                            {/* {item.icon && <item.icon />} */}
-                            <span>{item.title}</span>
+                          <Link href={item.items[0]?.url}>
+                            <SidebarMenuButton tooltip={item.title}>
+                              {/* <SidebarTrigger /> */}
+                              {item.icon && <item.icon className="w-15 h-15" />}
+                              <span>{item.title}</span>
                           </SidebarMenuButton>
+                          </Link>
                         </div>
                       ) : (
                         <div className="w-full">
                           <SidebarMenuButton asChild tooltip={item.title}>
                             <Link href={item.items[0]?.url }>
-                              {item.icon && <item.icon />}
+                              {item.icon && <item.icon className="w-15 h-15" />}
                               <span>{item.title}</span>
                             </Link>
                           </SidebarMenuButton>
@@ -66,7 +68,7 @@ export function NavMain({
                       <div className="w-full">
                         <SidebarMenuButton asChild tooltip={item.title}>
                           <Link href={item.url}>
-                            {item.icon && <item.icon />}
+                            {item.icon && <item.icon className="w-15 h-15" />}
                             <span>{item.title}</span>
                           </Link>
                         </SidebarMenuButton>
