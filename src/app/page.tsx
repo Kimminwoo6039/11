@@ -184,27 +184,7 @@ export default function Home() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50 overflow-hidden">
-              <div className="text-muted-foreground font-bold text-center py-2">
-                공유 화면
-              </div>
-              <div className="items-center flex justify-center h-[calc(100%-2.5rem)]">
-                {stream ? (
-                    <video
-                        ref={videoRef}
-                        autoPlay
-                        playsInline
-                        className="w-full h-full object-cover"
-                    />
-                ) : (
-                    <div className="text-sm text-muted-foreground">
-                      화면 공유가 필요합니다
-                    </div>
-                )}
-              </div>
-            </div>
-
+          <div className="grid auto-rows-min gap-4 md:grid-cols-2">
             {/* 캡처 이미지 카드 */}
             <div className="aspect-video rounded-xl bg-muted/50 overflow-hidden">
               <div className="h-full items-center justify-center"
@@ -214,27 +194,21 @@ export default function Home() {
                   캡처된 화면
                 </div>
                 <div className="items-center flex justify-center h-[calc(100%-2.5rem)]">
-                  {stream ? (
-                      capturedFile ? (
-                          <div className="relative group h-full w-full">
-                            <img
-                                src={URL.createObjectURL(capturedFile)}
-                                alt="Captured screen"
-                                className="h-full w-full object-cover"
-                            />
-                            <div
-                                className="absolute bottom-2 right-2 text-xs text-foreground/75 bg-background/75 px-2 py-1 rounded">
-                              최근 캡처
-                            </div>
-                          </div>
-                      ) : (
-                          <div className="text-sm text-muted-foreground">
-                            캡처 대기중...
-                          </div>
-                      )
+                  {capturedFile ? (
+                      <div className="relative group h-full w-full">
+                        <img
+                            src={URL.createObjectURL(capturedFile)}
+                            alt="Captured screen"
+                            className="h-full w-full object-cover"
+                        />
+                        <div
+                            className="absolute bottom-2 right-2 text-xs text-foreground/75 bg-background/75 px-2 py-1 rounded">
+                          최근 캡처
+                        </div>
+                      </div>
                   ) : (
                       <div className="text-sm text-muted-foreground">
-                        화면 공유가 필요합니다
+                        캡처된 화면이 없습니다
                       </div>
                   )}
                 </div>
@@ -274,7 +248,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="h-[33vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-4">
+          {/* <div className="h-[33vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-4">
             <div className="flex flex-col items-center justify-center h-full gap-4">
               <Button
                   onClick={handleScreenShare}
@@ -311,7 +285,7 @@ export default function Home() {
                   </div>
               )}
             </div>
-          </div>
+          </div> */}
         </div>
       </>
   );

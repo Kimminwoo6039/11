@@ -40,8 +40,26 @@ export default function Layout({children}: {children: React.ReactNode}) {
         <CaptureToDetection/>
       
         {/* Sidebar Submenu */}
-        <div className="flex flex-1 flex-row gap-0 p-4">
-          <div className="border border-border rounded-lg p-2"> 
+
+        
+        <div className="flex flex-1 flex-row gap-0 p-2 border-t border-border">
+
+        <div className="h-full flex flex-col p-3">
+          <div className="flex-1 w-full">
+            <h2 className="text-xl font-semibold mb-4">검출 내역</h2>
+            <Link href="/image/detection">
+              <span className={`text-gray-600 mb-4 block pl-1 ${pathname === '/image/detection' ? 'text-blue-600 font-semibold' : ''}`}>
+                선정성 검출 이미지
+              </span>
+            </Link>
+            <Link href="/image/gambling">
+              <span className={`text-gray-600 block pl-1${pathname === '/image/gambling' ? 'text-blue-600 font-semibold' : ''}`}>
+                도박 검출 이미지
+              </span>
+            </Link>
+          </div>
+        </div>
+          {/* <div className="border border-border rounded-lg p-2"> 
             <SidebarGroup>
               <SidebarGroupLabel>검출내역</SidebarGroupLabel>
               <SidebarMenu>
@@ -61,9 +79,9 @@ export default function Layout({children}: {children: React.ReactNode}) {
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroup> 
-          </div>  
-          <div className="flex-1 border border-border rounded-lg p-6">
-            {children}
+          </div>   */}
+          <div className="flex-1 border-l border-border rounded-md p-4">
+          {children}
           </div>
         </div>
 
