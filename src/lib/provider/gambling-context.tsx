@@ -288,8 +288,6 @@ export function GamblingProvider({children}: { children: ReactNode }) {
     return new Promise((resolve, reject) => {
       try {
         const store = transaction.objectStore('detections');
-
-        // 마지막 레코드 가져오기
         const getAllRequest = store.getAll();
 
         getAllRequest.onsuccess = () => {
@@ -298,15 +296,26 @@ export function GamblingProvider({children}: { children: ReactNode }) {
           if (existingDetections.length > 0) {
             const lastDetection = existingDetections[existingDetections.length - 1];
 
-            // URL만 비교
+            // URL 중복 체크
             if (lastDetection.url === detection.url) {
               console.log('Duplicate URL found, skipping save');
               resolve(-1);
               return;
             }
+              //yolodecteion 로직 
+            // 오래된 레코드 삭제 (최대 10개만 유지)
+            if (existingDetections.length >= 9) {
+              const oldKeys = existingDetections
+                .slice(0, existingDetections.length - 9)
+                .map(record => record.id);
+              
+              for (const key of oldKeys) {
+                store.delete(key);
+              }
+            }
           }
 
-          // 중복이 아닌 경우에만 저장
+          // 새로운 감지 기록 저장
           const newDetection = {
             ...detection,
             timestamp: new Date().toISOString(),

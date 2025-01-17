@@ -159,7 +159,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
       // 가장 최근 저장된 이미지들 가져오기 (최근 3개만)
       const getAllRequest = store.getAll();
-      const records = await new Promise((resolve, reject) => {
+      const records = await new Promise<any[]>((resolve, reject) => {
         getAllRequest.onsuccess = () => resolve(getAllRequest.result);
         getAllRequest.onerror = () => reject(getAllRequest.error);
       });
@@ -168,7 +168,6 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         // 최근 저장된 이미지들 중에서 중복 확인
         const recentImages = records.slice(-3);
         for (const record of recentImages) {
-          // 이미지 유사도 비교 (간단한 방식)
           if (areImagesIdentical(record.data, imageData)) {
             console.log('Duplicate image detected within recent saves, skipping save');
             return;
@@ -176,8 +175,8 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         }
 
         // 오래된 레코드 삭제 (최대 10개만 유지)
-        if (records.length >= 10) {
-          const oldKeys = records.slice(0, records.length - 10).map(r => r.id);
+        if (records.length >= 9) { 
+          const oldKeys = records.slice(0, records.length - 9).map(r => r.id); // 남길 개수 조정
           for (const key of oldKeys) {
             await store.delete(key);
           }

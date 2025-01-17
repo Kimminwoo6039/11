@@ -11,12 +11,16 @@ import {
 import Link from "next/link";
 import CaptureToDetection from "@/components/detection/capture-to-detection";
 import { usePathname } from 'next/navigation';
+import localFont from "next/font/local";
+
+
 
 export default function Layout({children}: {children: React.ReactNode}) {
   const pathname = usePathname();
-  
+
   return (
       <>
+      
         <header
             className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
@@ -30,7 +34,7 @@ export default function Layout({children}: {children: React.ReactNode}) {
                 <BreadcrumbSeparator className="hidden md:block"/>
                 <BreadcrumbItem>
                   <Link href="/image/detection">
-                    <BreadcrumbPage>선정성 이미지</BreadcrumbPage>
+                    <BreadcrumbPage >선정성 이미지</BreadcrumbPage>
                   </Link>
                 </BreadcrumbItem>
               </BreadcrumbList>
@@ -42,18 +46,18 @@ export default function Layout({children}: {children: React.ReactNode}) {
         {/* Sidebar Submenu */}
 
         
-        <div className="flex flex-1 flex-row gap-0 p-2 border-t border-border">
+        <div className="flex flex-1 flex-row gap-0 p-2 border-t border-border ">
 
         <div className="h-full flex flex-col p-3">
           <div className="flex-1 w-full">
-            <h2 className="text-xl font-semibold mb-4">검출 내역</h2>
+            <h2 className="text-[18px] font-bold mb-4">검출 내역</h2>
             <Link href="/image/detection">
-              <span className={`text-gray-600 mb-4 block pl-1 ${pathname === '/image/detection' ? 'text-blue-600 font-semibold' : ''}`}>
+              <span className={`text-sm text-gray-600 mb-4 block pl-1 ${pathname === '/image/detection' ? 'text-blue-600 font-semibold' : ''}`}>
                 선정성 검출 이미지
               </span>
             </Link>
             <Link href="/image/gambling">
-              <span className={`text-gray-600 block pl-1${pathname === '/image/gambling' ? 'text-blue-600 font-semibold' : ''}`}>
+              <span className={`text-sm text-gray-600 block pl-1${pathname === '/image/gambling' ? 'text-blue-600 font-semibold' : ''}`}>
                 도박 검출 이미지
               </span>
             </Link>

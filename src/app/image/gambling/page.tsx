@@ -28,6 +28,7 @@ export default function DetectionImage() {
   const [images, setImages] = useState<DetectionImageData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 모달
   const [modalOpen, setModalOpen] = useState(false);
@@ -54,6 +55,7 @@ export default function DetectionImage() {
   };
 
   const loadImages = async (page: number) => {
+    setIsLoading(true);
     try {
       const db = await openDatabase();
       const transaction = db.transaction("detections", "readonly");
@@ -85,6 +87,8 @@ export default function DetectionImage() {
       setImages(pageItems);
     } catch (error) {
       console.error("Error loading images:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
   useEffect(() => {
@@ -123,7 +127,18 @@ export default function DetectionImage() {
         </Dialog>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <div>
-            {images.length === 0 ? (
+            {isLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  {[...Array(10)].map((_, i) => (
+                      <div
+                          key={i}
+                          className="aspect-square rounded-xl overflow-hidden border border-border"
+                      >
+                        <div className="w-full h-full bg-muted animate-pulse" />
+                      </div>
+                  ))}
+                </div>
+            ) : images.length === 0 ? (
                 <div
                     className="flex flex-col items-center justify-center min-h-[200px] text-muted-foreground">
                   <p>저장된 이미지가 없습니다.</p>

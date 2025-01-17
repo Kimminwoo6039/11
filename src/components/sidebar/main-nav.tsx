@@ -35,7 +35,7 @@ export function MainNav() {
   return (
     <div className="h-full flex overflow-hidden ">
       {/* Nav Icons */}
-      <div className="w-16 bg-[#0d47a1] flex-none h-full flex flex-col rounded-r-md min-h-screen">
+      <div className="w-15 bg-[#0d47a1] flex-none h-full flex flex-col rounded-r-md min-h-screen">
         <div className="p-4 flex items-center justify-center">
           <Link href="/" onClick={() => setSelectedNav('')}>
             <img src="/meer.ico" alt="logo" className="w-8 h-8"/>
@@ -55,7 +55,7 @@ export function MainNav() {
                     }`}
                     onClick={() => handleNavClick(id)}
                   >
-                    <Icon className="w-7 h-7"/>
+                    <Icon className="w-5 h-5"/>
                   </button>
                 </Link>
               ))}

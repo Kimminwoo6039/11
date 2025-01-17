@@ -7,27 +7,37 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import CaptureToDetection from "@/components/detection/capture-to-detection";
 import { GamblingProvider } from "@/lib/provider/gambling-context";
 import { MainNav } from "@/components/sidebar/main-nav";
+// const customFont = localFont({
+//   src: [
+//     {
+//       path: "./fonts/Pretendard-Light.otf",
+//       weight: "300",
+//       style: "light",
+//     },
+//     {
+//       path: "./fonts/Pretendard-Regular.otf",
+//       weight: "400",
+//       style: "normal",
+//     },
+//     {
+//       path: "./fonts/Pretendard-Medium.otf",
+//       weight: "500",
+//       style: "normal",
+//     },
+//     {
+//       path: "./fonts/Pretendard-Bold.otf",
+//       weight: "600",
+//       style: "normal",
+//     },
+//   ],
+// });
+
 const customFont = localFont({
   src: [
     {
-      path: "./fonts/Pretendard-Light.otf",
+      path: "./fonts/NotosansKR-Regular.ttf",
       weight: "300",
       style: "light",
-    },
-    {
-      path: "./fonts/Pretendard-Regular.otf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "./fonts/Pretendard-Medium.otf",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "./fonts/Pretendard-Bold.otf",
-      weight: "600",
-      style: "normal",
     },
   ],
 });
