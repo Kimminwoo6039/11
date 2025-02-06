@@ -62,18 +62,18 @@ const data = {
         },
       ],
     },
-    {
-      title: "차단",
-      url: "#",
-      icon: ShieldX,
-      isActive: true,
-      items: [
-        {
-          title: "사이트 차단",
-          url: "/block",
-        },
-      ],
-    },
+    // {
+    //   title: "차단",
+    //   url: "#",
+    //   icon: ShieldX,
+    //   isActive: true,
+    //   items: [
+    //     {
+    //       title: "사이트 차단",
+    //       url: "/block",
+    //     },
+    //   ],
+    // },
   ],
 }
 

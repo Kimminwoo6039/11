@@ -9,11 +9,9 @@ type DetectionBox = [number, number, number, number, string, number];
 type NotificationType = 'adult' | 'inappropriate' | 'spam';
 
 interface PreprocessedData {
+  offset: { x: number; y: number };
   tensor: number[];
-  originalSize: {
-    width: number;
-    height: number;
-  };
+  originalSize: { width: number; height: number };
 }
 
 interface ImageSection {
@@ -159,8 +157,8 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
       // 가장 최근 저장된 이미지들 가져오기 (최근 3개만)
       const getAllRequest = store.getAll();
-      const records = await new Promise((resolve, reject) => {
-        getAllRequest.onsuccess = () => resolve(getAllRequest.result);
+      const records: any[] = await new Promise((resolve, reject) => {
+        getAllRequest.onsuccess = () => resolve(getAllRequest.result || []);
         getAllRequest.onerror = () => reject(getAllRequest.error);
       });
 
@@ -176,8 +174,8 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         }
 
         // 오래된 레코드 삭제 (최대 10개만 유지)
-        if (records.length >= 10) {
-          const oldKeys = records.slice(0, records.length - 10).map(r => r.id);
+        if (records.length >= 9) {
+          const oldKeys = records.slice(0, records.length - 9).map(r => r.id);
           for (const key of oldKeys) {
             await store.delete(key);
           }
@@ -249,110 +247,69 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
   // 이미지 전처리
 
-  // 4번
-  // const preprocessImage = useCallback(async (file: File): Promise<PreprocessedData> => {
+  //4번
+  // const preprocessImage = useCallback(async (file: File): Promise<PreprocessedData[]> => {
   //   return new Promise(async (resolve) => {
   //     const img = new Image();
   //     const url = URL.createObjectURL(file);
-  //
+  
   //     img.onload = async () => {
-  //       // First try processing the whole image
+  //       // 전체 이미지 먼저 처리
   //       const fullImagePreprocessed = preprocessSingleSection(img, 0, 0, img.width, img.height);
-  //
-  //       // Run detection on full image
-  //       const detections = await runDetection(fullImagePreprocessed);
-  //
-  //       console.log("========================= 전체 :", detections.length)
-  //
-  //       // If we found any detections in the full image, return immediately
-  //       if (detections && detections.length > 0) {
+  //       const fullDetections = await runDetection(fullImagePreprocessed);
+  
+  //       if (fullDetections && fullDetections.length > 0) {
   //         URL.revokeObjectURL(url);
   //         resolve([fullImagePreprocessed]);
   //         return;
   //       }
-  //
-  //       // If no detections found, split into 4 sections
+  
+  //       // 4분할 섹션 정의
   //       const sections: ImageSection[] = [
   //         {x: 0, y: 0, width: img.width / 2, height: img.height / 2},             // 좌상단
   //         {x: img.width / 2, y: 0, width: img.width / 2, height: img.height / 2}, // 우상단
   //         {x: 0, y: img.height / 2, width: img.width / 2, height: img.height / 2}, // 좌하단
   //         {x: img.width / 2, y: img.height / 2, width: img.width / 2, height: img.height / 2} // 우하단
   //       ];
-  //
-  //       // Process first section (좌상단)
-  //       const firstSectionPreprocessed = preprocessSingleSection(
+  
+  //       // 모든 섹션을 동시에 처리하는 Promise 배열 생성
+  //       const sectionPromises = sections.map(async (section, index) => {
+  //         const preprocessed = preprocessSingleSection(
   //           img,
-  //           sections[0].x,
-  //           sections[0].y,
-  //           sections[0].width,
-  //           sections[0].height
-  //       );
-  //       const firstSectionDetections = await runDetection(firstSectionPreprocessed);
-  //       console.log("========================= 첫번째 :", firstSectionDetections.length);
-  //       if (firstSectionDetections && firstSectionDetections.length > 0) {
+  //           section.x,
+  //           section.y,
+  //           section.width,
+  //           section.height
+  //         );
+  //         const detections = await runDetection(preprocessed);
+  //         console.log(`========================= ${index + 1}번째:`, detections.length);
+          
+  //         if (detections && detections.length > 0) {
+  //           return preprocessed; // 감지된 경우만 반환
+  //         }
+  //         throw new Error('No detection'); // 감지되지 않은 경우 에러 발생
+  //       });
+  
+  //       try {
+  //         // 가장 먼저 감지된 섹션만 반환
+  //         const firstDetectedSection = await Promise.race(sectionPromises);
   //         URL.revokeObjectURL(url);
-  //         resolve([firstSectionPreprocessed]);
-  //         return;
-  //       }
-  //
-  //       // Process second section (우상단)
-  //       const secondSectionPreprocessed = preprocessSingleSection(
-  //           img,
-  //           sections[1].x,
-  //           sections[1].y,
-  //           sections[1].width,
-  //           sections[1].height
-  //       );
-  //       const secondSectionDetections = await runDetection(secondSectionPreprocessed);
-  //       console.log("========================= 두번째 :", secondSectionDetections.length);
-  //       if (secondSectionDetections && secondSectionDetections.length > 0) {
+  //         resolve([firstDetectedSection]);
+  //       } catch (error) {
+  //         // 아무 섹션에서도 감지되지 않은 경우
+  //         const allResults = await Promise.all(sectionPromises.map(p => p.catch(e => null)));
+  //         const validResults = allResults.filter(result => result !== null);
   //         URL.revokeObjectURL(url);
-  //         resolve([secondSectionPreprocessed]);
-  //         return;
+  //         resolve(validResults.length > 0 ? validResults : [fullImagePreprocessed]);
   //       }
-  //
-  //       // Process third section (좌하단)
-  //       const thirdSectionPreprocessed = preprocessSingleSection(
-  //           img,
-  //           sections[2].x,
-  //           sections[2].y,
-  //           sections[2].width,
-  //           sections[2].height
-  //       );
-  //       const thirdSectionDetections = await runDetection(thirdSectionPreprocessed);
-  //       console.log("========================= 세번째 :", thirdSectionDetections.length);
-  //       if (thirdSectionDetections && thirdSectionDetections.length > 0) {
-  //         URL.revokeObjectURL(url);
-  //         resolve([thirdSectionPreprocessed]);
-  //         return;
-  //       }
-  //
-  //       // Process fourth section (우하단)
-  //       const fourthSectionPreprocessed = preprocessSingleSection(
-  //           img,
-  //           sections[3].x,
-  //           sections[3].y,
-  //           sections[3].width,
-  //           sections[3].height
-  //       );
-  //       const fourthSectionDetections = await runDetection(fourthSectionPreprocessed);
-  //       console.log("========================= 네번째 :", fourthSectionDetections.length);
-  //       if (fourthSectionDetections && fourthSectionDetections.length > 0) {
-  //         URL.revokeObjectURL(url);
-  //         resolve([fourthSectionPreprocessed]);
-  //         return;
-  //       }
-  //
-  //       URL.revokeObjectURL(url);
-  //       resolve([firstSectionPreprocessed, secondSectionPreprocessed, thirdSectionPreprocessed, fourthSectionPreprocessed]);
   //     };
-  //
+  
   //     img.src = url;
   //   });
   // }, []);
 
-  // // 이미지 전처리 세로 2분할
-  const preprocessImage = useCallback(async (file: File): Promise<PreprocessedData> => {
+  // 이미지 전처리 세로 2분할
+  const preprocessImage = useCallback(async (file: File): Promise<PreprocessedData[]> => {
     return new Promise(async (resolve) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
@@ -364,7 +321,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         // Run detection on full image
         const detections = await runDetection(fullImagePreprocessed);
 
-        console.log("========================= 전체 :", detections.length)
+        // console.log("========================= 전체 :", detections.length)
 
         // If we found any detections in the full image, return immediately
         if (detections && detections.length > 0) {
@@ -375,8 +332,8 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
         // If no detections found, split into 2 sections horizontally
         const sections: ImageSection[] = [
-          {x: 0, y: 0, width: img.width, height: img.height / 2},           // 상단 부분
-          {x: 0, y: img.height / 2, width: img.width, height: img.height / 2}  // 하단 부분
+          {x: 0, y: 0, width: img.width/2, height: img.height },           // 상단 부분
+          {x: 0, y: img.height , width: img.width/2, height: img.height }  // 하단 부분
         ];
 
 
@@ -392,7 +349,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         // Run detection on first section
         const firstSectionDetections = await runDetection(firstSectionPreprocessed);
 
-        console.log("========================= 첫뻔재 :", detections.length)
+        // console.log("========================= 첫뻔재 :", detections.length)
         // If detections found in first section, return immediately
         if (firstSectionDetections && firstSectionDetections.length > 0) {
           URL.revokeObjectURL(url);
@@ -409,7 +366,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
             sections[1].height
         );
 
-        console.log("========================= 두번재 :")
+        // console.log("========================= 두번재 :")
 
         URL.revokeObjectURL(url);
         resolve([firstSectionPreprocessed, secondSectionPreprocessed]);
@@ -570,7 +527,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         const newImageData = canvas!.toDataURL('image/png');
         saveImageToDB('DetectionImageDB', newImageData);
         handleMessage();
-        console.log('감지된 객체들:', detectedLabels.join(', '));
+        // console.log('감지된 객체들:', detectedLabels.join(', '));///
       }
 
       URL.revokeObjectURL(img.src);
@@ -581,7 +538,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
 
   // 출력 처리
-  const processOutputs = (output: Float32Array<any>, imgWidth: number, imgHeight: number): DetectionBox[] => {
+  const processOutputs = (output: Float32Array, imgWidth: number, imgHeight: number): DetectionBox[] => {
     let boxes: DetectionBox[] = [];
     // 클래스별 최대 감지 수 제한
     const maxDetectionsPerClass = 1;
@@ -641,7 +598,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
       });
 
       if (!isDuplicate) {
-        console.log(`Detection: ${label} (${prob.toFixed(3)}) at [${x1.toFixed(1)}, ${y1.toFixed(1)}, ${x2.toFixed(1)}, ${y2.toFixed(1)}]`);
+        // console.log(`Detection: ${label} (${prob.toFixed(3)}) at [${x1.toFixed(1)}, ${y1.toFixed(1)}, ${x2.toFixed(1)}, ${y2.toFixed(1)}]`);
         boxes.push([x1, y1, x2, y2, label, prob]);
         classDetectionCount.set(classId, currentCount + 1);
       }
@@ -716,12 +673,12 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
       const outputs = await modelSessionRef.current!.run({images: inputTensor});
       return processOutputs(
-          outputs.output0.data as Float32Array<any>,
+          outputs.output0.data as Float32Array,
           preprocessedData.originalSize.width,
           preprocessedData.originalSize.height
       );
     } catch (error) {
-      console.error('Detection failed:', error);
+      // console.error('Detection failed:', error);
       return [];
     }
   }, []);
@@ -737,12 +694,12 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
       };
 
       request.onsuccess = () => {
-        console.log("DB Opened successfully");
+        // console.log("DB Opened successfully");
         resolve(request.result);
       };
 
       request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-        console.log("Upgrading database...");
+        // console.log("Upgrading database...");
         const db = (event.target as IDBOpenDBRequest).result;
 
         // 기존 스토어가 있다면 삭제
@@ -771,24 +728,24 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
       const transaction = db.transaction('blockedSites', 'readwrite');
       const store = transaction.objectStore('blockedSites');
 
-      const blockedSite = {
-        url,
-        blockedAt: new Date(),
-        unblockTime: new Date(Date.now() + duration * 60 * 1000),
-        duration: duration
-      };
+      // const blockedSite = {
+      //   url,
+      //   blockedAt: new Date(),
+      //   unblockTime: new Date(Date.now() + duration * 60 * 1000),
+      //   duration: duration
+      // };
 
-      await store.put(blockedSite);
-      console.log('Site saved to BlockedSitesDB:', blockedSite);
+      // await store.put(blockedSite);
+      // console.log('Site saved to BlockedSitesDB:', blockedSite);
     } catch (error) {
-      console.error('Error saving to BlockedSitesDB:', error);
+      // console.error('Error saving to BlockedSitesDB:', error);
     }
   };
   // 메시지 처리
   const handleMessage = async () => {
     // 쿨다운 체크
     if (Date.now() - lastAlertTimeRef.current <= CONSTANTS.ALERT_COOLDOWN) {
-      console.log('쿨다운 중입니다.');
+      // console.log('쿨다운 중입니다.');
       return;
     }
 
@@ -815,7 +772,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
       // 성공적으로 처리된 경우에만 알림 전송 및 쿨다운 시작
       sendNotification('adult', '성인 콘텐츠가 감지되었습니다.');
       lastAlertTimeRef.current = Date.now();
-      console.log('차단 처리 완료:', currentUrl);
+      // console.log('차단 처리 완료:', currentUrl);
     } catch (error) {
       console.error('Error saving to BlockedSitesDB:', error);
     }
@@ -865,7 +822,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
         // 쿨다운 체크를 handleMessage 내부로 이동
         handleMessage();
-        console.log('감지된 객체들:', detectedLabels.join(', '));
+        // console.log('감지된 객체들:', detectedLabels.join(', '));
       }
 
       URL.revokeObjectURL(img.src);
@@ -897,7 +854,8 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
       // 이전 이미지와 비교
       if (prevImageRef.current === currentImageData) {
-        console.log('Duplicate image detected, skipping detection');
+        //이중이미지 검출 시 검출 스킵
+        // console.log('Duplicate image detected, skipping detection');
         return;
       }
 
@@ -914,8 +872,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         if (detections.length > 0) {
           allDetections.push({
             boxes: detections,
-            sectionIndex: i,
-            gridPosition: preprocessedSections[i].gridPosition
+            sectionIndex: i
           });
         }
       }
