@@ -159,7 +159,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
 
       // 가장 최근 저장된 이미지들 가져오기 (최근 3개만)
       const getAllRequest = store.getAll();
-      const records = await new Promise<any[]>((resolve, reject) => {
+      const records = await new Promise((resolve, reject) => {
         getAllRequest.onsuccess = () => resolve(getAllRequest.result);
         getAllRequest.onerror = () => reject(getAllRequest.error);
       });
@@ -168,6 +168,7 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         // 최근 저장된 이미지들 중에서 중복 확인
         const recentImages = records.slice(-3);
         for (const record of recentImages) {
+          // 이미지 유사도 비교 (간단한 방식)
           if (areImagesIdentical(record.data, imageData)) {
             console.log('Duplicate image detected within recent saves, skipping save');
             return;
@@ -175,8 +176,8 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
         }
 
         // 오래된 레코드 삭제 (최대 10개만 유지)
-        if (records.length >= 9) { 
-          const oldKeys = records.slice(0, records.length - 9).map(r => r.id); // 남길 개수 조정
+        if (records.length >= 10) {
+          const oldKeys = records.slice(0, records.length - 10).map(r => r.id);
           for (const key of oldKeys) {
             await store.delete(key);
           }
@@ -247,40 +248,215 @@ const YOLOv8 = ({urlHistory = []}: YOLOv8Props) => {
   }, []);
 
   // 이미지 전처리
+
+  // 4번
+  // const preprocessImage = useCallback(async (file: File): Promise<PreprocessedData> => {
+  //   return new Promise(async (resolve) => {
+  //     const img = new Image();
+  //     const url = URL.createObjectURL(file);
+  //
+  //     img.onload = async () => {
+  //       // First try processing the whole image
+  //       const fullImagePreprocessed = preprocessSingleSection(img, 0, 0, img.width, img.height);
+  //
+  //       // Run detection on full image
+  //       const detections = await runDetection(fullImagePreprocessed);
+  //
+  //       console.log("========================= 전체 :", detections.length)
+  //
+  //       // If we found any detections in the full image, return immediately
+  //       if (detections && detections.length > 0) {
+  //         URL.revokeObjectURL(url);
+  //         resolve([fullImagePreprocessed]);
+  //         return;
+  //       }
+  //
+  //       // If no detections found, split into 4 sections
+  //       const sections: ImageSection[] = [
+  //         {x: 0, y: 0, width: img.width / 2, height: img.height / 2},             // 좌상단
+  //         {x: img.width / 2, y: 0, width: img.width / 2, height: img.height / 2}, // 우상단
+  //         {x: 0, y: img.height / 2, width: img.width / 2, height: img.height / 2}, // 좌하단
+  //         {x: img.width / 2, y: img.height / 2, width: img.width / 2, height: img.height / 2} // 우하단
+  //       ];
+  //
+  //       // Process first section (좌상단)
+  //       const firstSectionPreprocessed = preprocessSingleSection(
+  //           img,
+  //           sections[0].x,
+  //           sections[0].y,
+  //           sections[0].width,
+  //           sections[0].height
+  //       );
+  //       const firstSectionDetections = await runDetection(firstSectionPreprocessed);
+  //       console.log("========================= 첫번째 :", firstSectionDetections.length);
+  //       if (firstSectionDetections && firstSectionDetections.length > 0) {
+  //         URL.revokeObjectURL(url);
+  //         resolve([firstSectionPreprocessed]);
+  //         return;
+  //       }
+  //
+  //       // Process second section (우상단)
+  //       const secondSectionPreprocessed = preprocessSingleSection(
+  //           img,
+  //           sections[1].x,
+  //           sections[1].y,
+  //           sections[1].width,
+  //           sections[1].height
+  //       );
+  //       const secondSectionDetections = await runDetection(secondSectionPreprocessed);
+  //       console.log("========================= 두번째 :", secondSectionDetections.length);
+  //       if (secondSectionDetections && secondSectionDetections.length > 0) {
+  //         URL.revokeObjectURL(url);
+  //         resolve([secondSectionPreprocessed]);
+  //         return;
+  //       }
+  //
+  //       // Process third section (좌하단)
+  //       const thirdSectionPreprocessed = preprocessSingleSection(
+  //           img,
+  //           sections[2].x,
+  //           sections[2].y,
+  //           sections[2].width,
+  //           sections[2].height
+  //       );
+  //       const thirdSectionDetections = await runDetection(thirdSectionPreprocessed);
+  //       console.log("========================= 세번째 :", thirdSectionDetections.length);
+  //       if (thirdSectionDetections && thirdSectionDetections.length > 0) {
+  //         URL.revokeObjectURL(url);
+  //         resolve([thirdSectionPreprocessed]);
+  //         return;
+  //       }
+  //
+  //       // Process fourth section (우하단)
+  //       const fourthSectionPreprocessed = preprocessSingleSection(
+  //           img,
+  //           sections[3].x,
+  //           sections[3].y,
+  //           sections[3].width,
+  //           sections[3].height
+  //       );
+  //       const fourthSectionDetections = await runDetection(fourthSectionPreprocessed);
+  //       console.log("========================= 네번째 :", fourthSectionDetections.length);
+  //       if (fourthSectionDetections && fourthSectionDetections.length > 0) {
+  //         URL.revokeObjectURL(url);
+  //         resolve([fourthSectionPreprocessed]);
+  //         return;
+  //       }
+  //
+  //       URL.revokeObjectURL(url);
+  //       resolve([firstSectionPreprocessed, secondSectionPreprocessed, thirdSectionPreprocessed, fourthSectionPreprocessed]);
+  //     };
+  //
+  //     img.src = url;
+  //   });
+  // }, []);
+
+  // // 이미지 전처리 세로 2분할
   const preprocessImage = useCallback(async (file: File): Promise<PreprocessedData> => {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
 
-      img.onload = () => {
-        // 원본 이미지가 1000px을 넘는지 확인
-        if (img.width <= 1000 && img.height <= 1000) {
-          // 1000px 이하면 단일 처리
-          const singlePreprocessed = preprocessSingleSection(img, 0, 0, img.width, img.height);
-          resolve([singlePreprocessed]);
+      img.onload = async () => {
+        // First try processing the whole image
+        const fullImagePreprocessed = preprocessSingleSection(img, 0, 0, img.width, img.height);
+
+        // Run detection on full image
+        const detections = await runDetection(fullImagePreprocessed);
+
+        console.log("========================= 전체 :", detections.length)
+
+        // If we found any detections in the full image, return immediately
+        if (detections && detections.length > 0) {
+          URL.revokeObjectURL(url);
+          resolve([fullImagePreprocessed]);
           return;
         }
 
-        // 이미지 4등분 위치 계산
+        // If no detections found, split into 2 sections horizontally
         const sections: ImageSection[] = [
-          {x: 0, y: 0, width: img.width / 2, height: img.height / 2},
-          {x: img.width / 2, y: 0, width: img.width / 2, height: img.height / 2},
-          {x: 0, y: img.height / 2, width: img.width / 2, height: img.height / 2},
-          {x: img.width / 2, y: img.height / 2, width: img.width / 2, height: img.height / 2}
+          {x: 0, y: 0, width: img.width, height: img.height / 2},           // 상단 부분
+          {x: 0, y: img.height / 2, width: img.width, height: img.height / 2}  // 하단 부분
         ];
 
-        // 각 섹션 전처리
-        const preprocessedSections = sections.map(section =>
-            preprocessSingleSection(img, section.x, section.y, section.width, section.height)
+
+        // Process first section
+        const firstSectionPreprocessed = preprocessSingleSection(
+            img,
+            sections[0].x,
+            sections[0].y,
+            sections[0].width,
+            sections[0].height
         );
 
+        // Run detection on first section
+        const firstSectionDetections = await runDetection(firstSectionPreprocessed);
+
+        console.log("========================= 첫뻔재 :", detections.length)
+        // If detections found in first section, return immediately
+        if (firstSectionDetections && firstSectionDetections.length > 0) {
+          URL.revokeObjectURL(url);
+          resolve([firstSectionPreprocessed]);
+          return;
+        }
+
+        // If no detections in first section, process second section
+        const secondSectionPreprocessed = preprocessSingleSection(
+            img,
+            sections[1].x,
+            sections[1].y,
+            sections[1].width,
+            sections[1].height
+        );
+
+        console.log("========================= 두번재 :")
+
         URL.revokeObjectURL(url);
-        resolve(preprocessedSections);
+        resolve([firstSectionPreprocessed, secondSectionPreprocessed]);
       };
 
       img.src = url;
     });
   }, []);
+
+  // 원본
+  // const preprocessImage = useCallback(async (file: File): Promise<PreprocessedData> => {
+  //   return new Promise((resolve) => {
+  //     const img = new Image();
+  //     const url = URL.createObjectURL(file);
+  //
+  //     img.onload = () => {
+  //       // 원본 이미지가 1000px을 넘는지 확인
+  //       if (img.width <= 1000 && img.height <= 1000) {
+  //         // 1000px 이하면 단일 처리
+  //         const singlePreprocessed = preprocessSingleSection(img, 0, 0, img.width, img.height);
+  //         resolve([singlePreprocessed]);
+  //         return;
+  //       }
+  //
+  //       // 원본 개수가 없을때  4등분
+  //       // 1개 검출되면 리턴
+  //
+  //       // 이미지 4등분 위치 계산
+  //       const sections: ImageSection[] = [
+  //         {x: 0, y: 0, width: img.width / 2, height: img.height / 2},
+  //         {x: img.width / 2, y: 0, width: img.width / 2, height: img.height / 2},
+  //         {x: 0, y: img.height / 2, width: img.width / 2, height: img.height / 2},
+  //         {x: img.width / 2, y: img.height / 2, width: img.width / 2, height: img.height / 2}
+  //       ];
+  //
+  //       // 각 섹션 전처리
+  //       const preprocessedSections = sections.map(section =>
+  //           preprocessSingleSection(img, section.x, section.y, section.width, section.height)
+  //       );
+  //
+  //       URL.revokeObjectURL(url);
+  //       resolve(preprocessedSections);
+  //     };
+  //
+  //     img.src = url;
+  //   });
+  // }, []);
 
   const preprocessSingleSection = (
       img: HTMLImageElement,

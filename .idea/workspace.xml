@@ -26,7 +26,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="dev" />
+        <entry key="$PROJECT_DIR$" value="prod" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -34,6 +34,22 @@
   <component name="GitLabDefaultAccount">
     <option name="defaultAccountId" value="f4bdd7ae-c184-4b75-9419-36c8303a3ba7" />
   </component>
+  <component name="GitLabMergeRequestFiltersHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPENED&quot;,
+    &quot;assignee&quot;: {
+      &quot;type&quot;: &quot;org.jetbrains.plugins.gitlab.mergerequest.ui.filters.GitLabMergeRequestsFiltersValue.MergeRequestsMemberFilterValue.MergeRequestsAssigneeFilterValue&quot;,
+      &quot;username&quot;: &quot;kimmw&quot;,
+      &quot;fullname&quot;: &quot;김민우&quot;
+    }
+  }
+}</component>
+  <component name="GitLabMergeRequestsSettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;first&quot;: &quot;http://192.168.0.103/rnd/meercat.ch/meercatch_chrome.git&quot;,
+    &quot;second&quot;: &quot;f4bdd7ae-c184-4b75-9419-36c8303a3ba7&quot;
+  }
+}</component>
   <component name="OptimizeOnSaveOptions">
     <option name="myRunOnSave" value="true" />
   </component>
@@ -48,7 +64,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "prod",
+    "git-widget-placeholder": "psbprod",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/workspace/meercatch_chrome_-/public",
     "node.js.detected.package.eslint": "true",
@@ -65,7 +81,7 @@
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.0",
     "settings.editor.selected.configurable": "actions.on.save",
-    "ts.external.directory.path": "C:\\workspace\\meercatch_chrome_-\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "D:\\intellij\\zzzzzzz\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -157,6 +173,14 @@
       <workItem from="1734400856690" duration="4409000" />
       <workItem from="1734417407373" duration="170000" />
       <workItem from="1735517165476" duration="13618000" />
+      <workItem from="1735601529010" duration="8433000" />
+      <workItem from="1735774762167" duration="12776000" />
+      <workItem from="1735884601760" duration="944000" />
+      <workItem from="1736323150379" duration="759000" />
+      <workItem from="1736378659230" duration="15000" />
+      <workItem from="1736405268707" duration="3230000" />
+      <workItem from="1736411786029" duration="745000" />
+      <workItem from="1736466523133" duration="1387000" />
     </task>
     <task id="LOCAL-00001" summary="in">
       <option name="closed" value="true" />
@@ -318,7 +342,39 @@
       <option name="project" value="LOCAL" />
       <updated>1735521593861</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="2025-01-09 김민우&#10;1. 이미지 조회시 스켈레톤 추가">
+      <option name="closed" value="true" />
+      <created>1736405333275</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1736405333275</updated>
+    </task>
+    <task id="LOCAL-00022" summary="2025-01-09 김민우&#10;1. 이미지 조회시 스켈레톤 추가">
+      <option name="closed" value="true" />
+      <created>1736406788830</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1736406788830</updated>
+    </task>
+    <task id="LOCAL-00023" summary="2025-01-09 김민우&#10;1. package.json start 변경">
+      <option name="closed" value="true" />
+      <created>1736406877726</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1736406877726</updated>
+    </task>
+    <task id="LOCAL-00024" summary="2025-01-09 김민우&#10;1. package.json start 변경">
+      <option name="closed" value="true" />
+      <created>1736407010012</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1736407010012</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -357,6 +413,8 @@
     <MESSAGE value="2024-12-30 김민우&#10;1. yolo 화면 분할 1분할에 4분할로 변경" />
     <MESSAGE value="2024-12-30 김민우&#10;1. yolo 중복 저장 수정" />
     <MESSAGE value="2024-12-30 김민우&#10;1. 이미지 정렬 오류 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="2024-12-30 김민우&#10;1. 이미지 정렬 오류 수정" />
+    <MESSAGE value="2025-01-09 김민우&#10;1. 이미지 조회시 스켈레톤 추가" />
+    <MESSAGE value="2025-01-09 김민우&#10;1. package.json start 변경" />
+    <option name="LAST_COMMIT_MESSAGE" value="2025-01-09 김민우&#10;1. package.json start 변경" />
   </component>
 </project>
