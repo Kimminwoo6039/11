@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7c2dfbcf-d02f-42c2-95d9-41c893e2c178" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/detection/yolo-8v-detection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/detection/yolo-8v-detection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +81,7 @@
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.0",
     "settings.editor.selected.configurable": "actions.on.save",
-    "ts.external.directory.path": "D:\\intellij\\zzzzzzz\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "D:\\intellij\\meercatch_chrome444\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -391,7 +391,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="prod" />
+                        <option value="psbprod" />
                       </list>
                     </value>
                   </entry>

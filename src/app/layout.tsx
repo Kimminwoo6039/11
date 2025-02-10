@@ -1,12 +1,10 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
+import type {Metadata} from "next";
 import "./globals.css";
-import { Providers } from "@/app/providers";
-import { AppSidebar } from "@/components/sidebar/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {Providers} from "@/app/providers";
+import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
 import CaptureToDetection from "@/components/detection/capture-to-detection";
-import { GamblingProvider } from "@/lib/provider/gambling-context";
-import { MainNav } from "@/components/sidebar/main-nav";
+import {GamblingProvider} from "@/lib/provider/gambling-context";
+import {MainNav} from "@/components/sidebar/main-nav";
 // const customFont = localFont({
 //   src: [
 //     {
@@ -32,15 +30,15 @@ import { MainNav } from "@/components/sidebar/main-nav";
 //   ],
 // });
 
-const customFont = localFont({
-  src: [
-    {
-      path: "./fonts/NotosansKR-Regular.ttf",
-      weight: "300",
-      style: "light",
-    },
-  ],
-});
+// const customFont = localFont({
+//   src: [
+//     {
+//       path: "./fonts/NotosansKR-Regular.ttf",
+//       weight: "300",
+//       style: "light",
+//     },
+//   ],
+// });
 
 export const metadata: Metadata = {
   title: "meerCat.ch",
@@ -49,40 +47,40 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
+                                     children,
+                                   }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={customFont.className}>
-        <Providers>
-          <GamblingProvider>
-            <SidebarProvider>
-            <CaptureToDetection />
-              <MainNav />
-              <SidebarInset>{children}</SidebarInset>
-            </SidebarProvider>
-          </GamblingProvider>
-        </Providers>
+      <html lang="en">
+      <body>
+      <Providers>
+        <GamblingProvider>
+          <SidebarProvider>
+            <CaptureToDetection/>
+            <MainNav/>
+            <SidebarInset>{children}</SidebarInset>
+          </SidebarProvider>
+        </GamblingProvider>
+      </Providers>
       </body>
-    </html>
-    // <html lang="en">
-    // <body
-    //     className={customFont.className}
-    // >
-    // <Providers>
-    //   <GamblingProvider>
-    //     <CaptureToDetection/>
-    //     <SidebarProvider defaultOpen={false}>
-    //       <AppSidebar/>
-    //       <SidebarInset>
-    //         {children}
-    //       </SidebarInset>
-    //     </SidebarProvider>
-    //   </GamblingProvider>
-    // </Providers>
-    // </body>
-    // </html>
+      </html>
+      // <html lang="en">
+      // <body
+      //     className={customFont.className}
+      // >
+      // <Providers>
+      //   <GamblingProvider>
+      //     <CaptureToDetection/>
+      //     <SidebarProvider defaultOpen={false}>
+      //       <AppSidebar/>
+      //       <SidebarInset>
+      //         {children}
+      //       </SidebarInset>
+      //     </SidebarProvider>
+      //   </GamblingProvider>
+      // </Providers>
+      // </body>
+      // </html>
   );
 }
