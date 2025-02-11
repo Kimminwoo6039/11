@@ -29,6 +29,7 @@ export function TeamSwitcher({
                   className="flex aspect-square size-8 items-center justify-center rounded-lg  text-sidebar-primary-foreground">
                 <img
                     src={activeTeam.logo}
+                    alt=""
                 />
               </div>
               <div className="grid flex-1 text-left text-lg leading-tight">
